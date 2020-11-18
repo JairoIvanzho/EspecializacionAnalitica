@@ -1,0 +1,155 @@
+---
+title: "Modelos_API_R"
+author: "Jairo Ordóñez y Jhon Freddy Puentes"
+date: "11/18/2020"
+output: html_document
+---
+
+```{r}
+library(dplyr)
+library(rsample)
+library(ranger)
+library(RMark)
+```
+
+
+* Cargue de Datos
+
+```{r}
+data = read.csv("../data/KPDRs_202011180830.csv", sep = "|")
+head(data)
+```
+
+```{r}
+dataAntigua = data %>%
+  filter(data$date <= '2020-10-31') %>%
+  select(-date)
+tail(dataAntigua)
+```
+
+Particionamos los datos en entrenamiento y prueba
+
+```{r}
+set.seed(20201116)
+train_test_split <- rsample::initial_split(data = dataAntigua, prop = 0.80)
+train_data <- train_test_split %>% training()
+test_data <- train_test_split %>% testing()
+```
+
+
+Entrenamos un modelo Random Forest inicial
+
+```{r}
+n_features <- length(setdiff(names(train_data), "percentKPDR"))
+
+KPDR_RandomForest1 <- ranger(
+  percentKPDR ~ ., 
+  data = train_data, 
+  num.trees = 500,
+  mtry = floor(n_features / 3),
+  max.depth = 10, 
+  respect.unordered.factors = "order",
+  seed = 20201116
+)
+
+y_pred1 <- predict(KPDR_RandomForest1, data = test_data)$predictions
+plot(test_data$percentKPDR , y_pred1 )
+abline(a = 0, b = 1, col = "red")
+```
+```{r}
+# RMSE
+sqrt(mean((test_data$percentKPDR - y_pred1)^2))
+```
+
+Creamos una grilla para el Random Forest
+
+```{r}
+param_grid <- expand.grid(
+  mtry = floor(n_features * c(.05, .15, .25, .333, .4)),
+  min.node.size = c(1, 3, 5, 10), 
+  replace = c(TRUE, FALSE),                               
+  sample.fraction = c(.5, .63, .8),                       
+  rmse = NA                                               
+)
+
+for(i in seq_len(nrow(param_grid))) {
+  fit <- ranger(
+    formula         = percentKPDR ~ ., 
+    data            = train_data, 
+    num.trees       = n_features * 10,
+    mtry            = param_grid$mtry[i],
+    min.node.size   = param_grid$min.node.size[i],
+    replace         = param_grid$replace[i],
+    sample.fraction = param_grid$sample.fraction[i],
+    verbose         = FALSE,
+    seed            = 20201116,
+    respect.unordered.factors = 'order',
+  )
+  
+  param_grid$rmse[i] <- sqrt(fit$prediction.error)
+}
+
+# assess top 10 models
+a <- param_grid %>%
+  arrange(rmse) %>%
+  head(10)
+a
+```
+
+El modelo con menor __RMSE__ fue aquel con parámetros:
+
+* mtry = 4
+* min.node.size = 1
+* replace = FALSE
+* sample.fraction = 0.63
+
+Por lo tanto, creamos nuestro modelo con estos parámetros
+
+```{r}
+KPDR_RandomForestFinalModel <- ranger(
+  percentKPDR ~ ., 
+  data = train_data, 
+  num.trees = 500,
+  mtry = 4,
+  replace = F,
+  sample.fraction = 0.63,
+  min.node.size = 1,
+  max.depth = NULL, 
+  seed = 20201116
+)
+
+y_predFinal <- predict(KPDR_RandomForestFinalModel, data = test_data)$predictions
+plot(test_data$percentKPDR , y_predFinal)
+abline(a = 0, b = 1, col = "red")
+```
+
+
+```{r}
+# RMSE
+sqrt(mean((test_data$percentKPDR - y_predFinal)^2))
+```
+
+```{r}
+saveRDS(KPDR_RandomForestFinalModel, "./modeloRandomForestInR.rds")
+```
+
+
+Ahora vamos a probar el modelo con datos nuevos
+
+```{r}
+dataNueva = data %>%
+  filter(data$date > '2020-10-31') %>%
+  select(-date)
+
+y_predNueva = predict(KPDR_RandomForestFinalModel, data = dataNueva)$predictions
+plot(dataNueva$percentKPDR , y_predNueva)
+abline(a = 0, b = 1, col = "red")
+
+```
+
+```{r}
+# RMSE
+sqrt(mean((dataNueva$percentKPDR - y_predNueva)^2))
+```
+
+Con los datos nuevos, al modelo no le fue muy bien.

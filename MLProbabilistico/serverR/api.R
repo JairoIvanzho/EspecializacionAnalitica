@@ -1,0 +1,15 @@
+library(plumber)
+library(jsonlite)
+library(ranger)
+
+load("./models/modeloRandomForestInR.RData")
+ 
+#* @post /api/v1/licenses/predict
+predict_licenses <- function(numDC_SDP, numDC_AIR, numDC_CCN, numDC_OCC, numCDR_CONFB, numCDR_CONFNB, numCDR_CALLB, numCDR_CALLNB, numCDR_DATOSB, TPS_Voice, TPS_SMS, TPS_CCNGY_SSU, TPS_OCCGY_SSU, TPS_OCCGY_CR, TPS_CCNGY_CR)
+{
+	#datos <- data.frame(list(numDC_SDP=11087,numDC_AIR=4926,numDC_CCN=36626,numDC_OCC=21468,numCDR_CONFB=5007804,numCDR_CONFNB=76809470,numCDR_CALLB=39625463,numCDR_CALLNB=7908078,numCDR_DATOSB=199520550,TPS_Voice=311088.2733333333,TPS_SMS=29442.18,TPS_CCNGY_SSU=2485787.34,TPS_OCCGY_SSU=1659918.8233333332,TPS_OCCGY_CR=1670289.0133333334,TPS_CCNGY_CR=2591813.473333333,percentKPDR=83.37))
+	datos <- data.frame(list(numDC_SDP=numDC_SDP,numDC_AIR=numDC_AIR,numDC_CCN=numDC_CCN,numDC_OCC=numDC_OCC,numCDR_CONFB=numCDR_CONFB,numCDR_CONFNB=numCDR_CONFNB,numCDR_CALLB=numCDR_CALLB,numCDR_CALLNB=numCDR_CALLNB,numCDR_DATOSB=numCDR_DATOSB,TPS_Voice=TPS_Voice,TPS_SMS=TPS_SMS,TPS_CCNGY_SSU=TPS_CCNGY_SSU,TPS_OCCGY_SSU=TPS_OCCGY_SSU,TPS_OCCGY_CR=TPS_OCCGY_CR,TPS_CCNGY_CR=TPS_CCNGY_CR))
+	prediction <- predict(KPDR_RandomForestFinalModel, datos)$predictions
+	list(prediccion=unbox(prediction))
+}
+

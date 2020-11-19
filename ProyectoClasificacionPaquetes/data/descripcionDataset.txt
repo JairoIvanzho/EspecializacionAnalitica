@@ -1,0 +1,21 @@
+Campo|Tipo de Campo|Descripción
+OfferId|INTEGER|Identificador del Paquete del dataset.
+date|DATE|Fecha del registro en formato YYYY-MM-DD.
+nombre_dia|VARCHAR|Identifica el Nombre del día de la fecha (Domingo, Lunes, Martes, Miércoles, Jueves, Viernes, Sábado).
+tipo_dia|VARCHAR|Clasificación del día (HABIL, FIN DE SEMANA, FESTIVO).
+Ingreso|FLOAT|Total de ingreso del paquete para el día en cuestión.
+Cantidad_Vendidos|INTEGER|Total de unidades vendidas del paquete par  el día en cuestión.
+consumo_INTERNET|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio INTERNET.
+Consumo_Whatsapp|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio Whatsapp.
+Consumo_Facebook|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio Facebook.
+Consumo_Twitter|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio Twitter.
+Consumo_Instagram|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio Instagram.
+Consumo_Snapchat|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio Snapchat.
+Consumo_Youtube|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio Youtube.
+Consumo_ClaroVideo|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio Claro Video.
+Consumo_Waze|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio Waze.
+Consumo_GoogleMaps|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio Google Maps.
+Consumo_EasyTaxi|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio Easy Taxi.
+Consumo_AppTaxi|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio App Taxi.
+Consumo_WAP|FLOAT|Total del consumo de navegación en Bytes utilizando el servicio WAP.
+tipoPaquete|VARCHAR|Variable dependiente que identifica el tipo de paquete.

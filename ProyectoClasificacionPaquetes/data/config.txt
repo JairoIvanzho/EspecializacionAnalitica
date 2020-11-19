@@ -1,0 +1,2 @@
+host|port|user|pass|schema
+localhost|13307|root|thesentinel006|FILES_FOLLOWER

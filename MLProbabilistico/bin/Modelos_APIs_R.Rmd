@@ -131,6 +131,8 @@ sqrt(mean((test_data$percentKPDR - y_predFinal)^2))
 
 ```{r}
 saveRDS(KPDR_RandomForestFinalModel, "./modeloRandomForestInR.rds")
+
+save(KPDR_RandomForestFinalModel, file='./modeloRandomForestInR.RData')
 ```
 
 

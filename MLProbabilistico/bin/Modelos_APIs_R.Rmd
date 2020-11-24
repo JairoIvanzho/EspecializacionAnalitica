@@ -155,3 +155,11 @@ sqrt(mean((dataNueva$percentKPDR - y_predNueva)^2))
 ```
 
 Con los datos nuevos, al modelo no le fue muy bien.
+
+
+
+```{r}
+datos = data.frame(var1=1:5, var2=2*(1:5))
+datos
+```
+
